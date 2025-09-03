@@ -1,0 +1,138 @@
+version: 2
+updates:
+  # Enable version updates for Python
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "📦"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "security"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "🔧"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Enable version updates for Python (requirements-dev.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "🧪"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "dev"
+    allow:
+      # Allow updates for all packages
+      - dependency-type: "all"
+
+  # Enable version updates for Python (requirements-docs.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "📚"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "docs"
+    allow:
+      # Allow updates for all packages
+      - dependency-type: "all"
+
+  # Enable version updates for Python (requirements-benchmarks.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "📊"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "benchmarks"
+    allow:
+      # Allow updates for all packages
+      - dependency-type: "all"
+
+  # Enable version updates for Python (requirements-security.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "atomixon49"
+    assignees:
+      - "atomixon49"
+    commit-message:
+      prefix: "🔒"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "python"
+      - "security"
+    allow:
+      # Allow updates for all packages
+      - dependency-type: "all"

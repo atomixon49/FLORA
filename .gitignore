@@ -1,0 +1,158 @@
+# 🌸 FLORA - Git Ignore File
+# Archivos y directorios que NO se incluirán en el repositorio
+
+# 📁 Archivos de modelos y documentación externa
+../modelos_matematicos_*.txt
+../CRYPTO_FLOWER_ESTRUCTURA.md
+../README_FLORA.md
+
+# 🐍 Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 🧪 Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# 🔧 IDEs y editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 📦 Entornos virtuales
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# 🗄️ Bases de datos
+*.db
+*.sqlite
+*.sqlite3
+
+# 📊 Logs
+*.log
+logs/
+log/
+
+# 🔐 Archivos de configuración sensibles
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.ini
+secrets.json
+
+# 📁 Directorios temporales
+tmp/
+temp/
+.tmp/
+.temp/
+
+# 🖼️ Archivos de imagen grandes
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+
+# 📄 Documentos
+*.pdf
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+# 🗜️ Archivos comprimidos
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+
+# 🐳 Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# ☁️ Cloud
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# 🔍 Archivos de búsqueda
+*.search
+*.index
+
+# 📱 Móvil
+*.apk
+*.ipa
+*.aab
+
+# 🎮 Juegos y aplicaciones
+*.exe
+*.app
+*.dmg
+*.deb
+*.rpm
+
+# 🌐 Web
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# 🚀 Otros
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.tmp
+*.temp
