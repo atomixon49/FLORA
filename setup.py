@@ -75,7 +75,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "flora=flora.cli:main",
+            "flora=python.cli:main",
             "flora-test=flora.test_flora:main",
         ],
     },

@@ -1,0 +1,15 @@
+{
+  "session_id": "demo",
+  "nonce": "a32117a93099024fe6ea5521",
+  "ciphertext": "517f71b4f5f40c5d97342f2f01c22e4f8eca42bc2d3368185a37b803",
+  "tag": "0fddea9b25d8bf4673389ef1f186af15",
+  "associated_data": "414243",
+  "timestamp": 1756991568.8385217,
+  "threat_level": 0.0,
+  "system_health": 1.0,
+  "session_uses": 1,
+  "session_max_uses": 3,
+  "kem": null,
+  "session_salt": "1527f7f81951557563200c67c4d2553627fc68af7adeb149fbea35cf89032a0e",
+  "master_salt": "037815f4fd1e7552f8f5062e00e6fa74f6a027a2ee85c008b1de7e68ca48983c"
+}

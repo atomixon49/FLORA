@@ -78,7 +78,7 @@ Repository = "https://github.com/atomixon49/CRYPTO-FLOWER.git"
 "Release Notes" = "https://github.com/atomixon49/CRYPTO-FLOWER/releases"
 
 [project.scripts]
-flora = "flora.cli:main"
+flora = "python.cli:main"
 flora-test = "flora.test_flora:main"
 
 [project.gui-scripts]

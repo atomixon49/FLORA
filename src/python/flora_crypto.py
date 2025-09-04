@@ -43,7 +43,8 @@ class FloraCryptoSystem:
 				 key_size: int = 32,  # 256 bits
 				 salt_size: int = 32,
 				 iterations: int = 100000,
-				 use_kyber: bool = True):
+				 use_kyber: bool = True,
+				 session_max_uses: int = 3):
 		"""
 		Inicializa el sistema de cifrado FLORA.
 		
@@ -52,6 +53,7 @@ class FloraCryptoSystem:
 			salt_size: Tamaño del salt para derivación de claves
 			iterations: Iteraciones para PBKDF2
 			use_kyber: Intentar usar Kyber KEM para claves de sesión
+			session_max_uses: Número máximo de usos por clave de sesión antes de rotarla
 		"""
 		self.key_size = key_size
 		self.salt_size = salt_size
@@ -61,7 +63,7 @@ class FloraCryptoSystem:
 		self.destruction_engine = ChaoticDestructionEngine()
 		
 		# Estado del sistema
-		self.session_keys = {}
+		self.session_keys: Dict[str, Dict[str, Any]] = {}
 		self.threat_level = 0.0
 		self.attack_history = []
 		self.system_health = 1.0
@@ -70,6 +72,7 @@ class FloraCryptoSystem:
 		self.max_failed_attempts = 3
 		self.failed_attempts = 0
 		self.lockout_until = 0
+		self.session_max_uses = max(1, session_max_uses)
 		
 		# KEM Kyber opcional
 		self.kyber = None
@@ -108,6 +111,16 @@ class FloraCryptoSystem:
 			hmac_hash_module=SHA256
 		)
 		return session_key
+
+	def _derive_session_key_pbkdf2_with_salt(self, master_key: bytes, session_salt: bytes) -> bytes:
+		"""Deriva clave de sesión a partir de un salt proporcionado (para reconstrucción stateless)."""
+		return PBKDF2(
+			master_key,
+			session_salt,
+			dkLen=self.key_size,
+			count=1000,
+			hmac_hash_module=SHA256
+		)
 	
 	def _encapsulate_session_key_kyber(self) -> Tuple[bytes, bytes, bytes]:
 		"""Si Kyber está disponible, genera (pk, c_L, ss)."""
@@ -115,9 +128,43 @@ class FloraCryptoSystem:
 			raise RuntimeError("Kyber no está habilitado")
 		pk, sk = self.kyber.keygen()
 		c_L, ss = self.kyber.encaps(pk)
-		# Guardar temporalmente la sk para decaps si fuera necesario (no persistir)
 		self._last_kyber_sk = sk  # type: ignore[attr-defined]
 		return pk, c_L, ss
+	
+	def _store_session(self, session_id: str, session_key: bytes, kem_info: Optional[Dict[str, Any]] = None, session_salt: Optional[bytes] = None):
+		self.session_keys[session_id] = {
+			'key': session_key,
+			'created': time.time(),
+			'uses': 0,
+			'max_uses': self.session_max_uses,
+			'kem': kem_info or None,
+			'session_salt': session_salt.hex() if session_salt else None
+		}
+	
+	def _rotate_session_key(self, master_key: bytes, session_id: str):
+		"""Rota la clave de sesión al alcanzar max_uses."""
+		old = self.session_keys.get(session_id)
+		if not old:
+			return
+		# Borrado lógico del material de la clave antigua
+		old['key'] = b"\x00" * len(old.get('key', b''))
+		old['uses'] = old.get('max_uses', self.session_max_uses)
+		
+		# Crear nueva clave de sesión
+		new_key = None
+		kem_info = None
+		if self.kyber_enabled:
+			try:
+				_, c_L, ss = self._encapsulate_session_key_kyber()
+				new_key = hashlib.sha256(ss).digest()[:self.key_size]
+				kem_info = {'ciphertext': c_L.hex()}
+			except Exception:
+				new_key = None
+		if new_key is None:
+			# Re-derivar con nuevo salt
+			new_salt = hashlib.sha256((session_id + str(time.time())).encode()).digest()
+			new_key = self._derive_session_key_pbkdf2_with_salt(master_key, new_salt)
+		self._store_session(session_id, new_key, kem_info, session_salt=(None if kem_info else new_salt))
 	
 	def create_session_key(self, master_key: bytes, session_id: str) -> bytes:
 		"""
@@ -126,28 +173,26 @@ class FloraCryptoSystem:
 		if self.kyber_enabled:
 			try:
 				_, c_L, ss = self._encapsulate_session_key_kyber()
-				# Usamos ss (shared secret) directamente como sesión (o KDF sobre ss si se desea)
 				session_key = hashlib.sha256(ss).digest()[:self.key_size]
-				self.session_keys[session_id] = {
-					'key': session_key,
-					'created': time.time(),
-					'uses': 0,
-					'kem': {
-						'ciphertext': c_L.hex()
-					}
-				}
+				kem_info = {'ciphertext': c_L.hex()}
+				self._store_session(session_id, session_key, kem_info)
 				return session_key
 			except Exception:
-				# Si falla Kyber, usar PBKDF2
 				pass
-		# Fallback
-		session_key = self._derive_session_key_pbkdf2(master_key, session_id)
-		self.session_keys[session_id] = {
-			'key': session_key,
-			'created': time.time(),
-			'uses': 0
-		}
+		# PBKDF2 con salt persistido en el bundle para reconstrucción
+		new_salt = hashlib.sha256((session_id + str(time.time())).encode()).digest()
+		session_key = self._derive_session_key_pbkdf2_with_salt(master_key, new_salt)
+		self._store_session(session_id, session_key, session_salt=new_salt)
 		return session_key
+	
+	def _touch_session_use(self, master_key: bytes, session_id: str):
+		"""Incrementa el contador de uso y rota si alcanzó max_uses."""
+		s = self.session_keys.get(session_id)
+		if not s:
+			return
+		s['uses'] = s.get('uses', 0) + 1
+		if s['uses'] >= s.get('max_uses', self.session_max_uses):
+			self._rotate_session_key(master_key, session_id)
 	
 	def encrypt_message(self, 
 					   message: bytes, 
@@ -156,39 +201,27 @@ class FloraCryptoSystem:
 					   associated_data: Optional[bytes] = None) -> Dict[str, Any]:
 		"""
 		Encripta un mensaje usando el sistema FLORA.
-		
-		Args:
-			message: Mensaje a encriptar
-			master_key: Clave maestra
-			session_id: Identificador de sesión
-			associated_data: Datos asociados para autenticación
-			
-		Returns:
-			Diccionario con datos encriptados y metadatos
 		"""
 		try:
-			# Verificar estado del sistema
 			if self.system_health < 0.1:
 				raise RuntimeError("Sistema comprometido - autodestrucción activada")
 			
-			# Crear clave de sesión
-			session_key = self.create_session_key(master_key, session_id)
+			# Crear/obtener clave de sesión
+			session_key = self.session_keys.get(session_id, {}).get('key')
+			if not session_key:
+				session_key = self.create_session_key(master_key, session_id)
 			
-			# Generar nonce único
-			nonce = get_random_bytes(12)  # 96 bits para GCM
-			
-			# Crear cipher AES-GCM
+			nonce = get_random_bytes(12)
 			cipher = AES.new(session_key, AES.MODE_GCM, nonce=nonce)
-			
-			# Agregar datos asociados si existen
 			if associated_data:
 				cipher.update(associated_data)
-			
-			# Encriptar mensaje
 			ciphertext, tag = cipher.encrypt_and_digest(message)
 			
-			# Preparar respuesta
-			encrypted_data = {
+			# Marcar uso (y posible rotación)
+			self._touch_session_use(master_key, session_id)
+			
+			info = self.session_keys.get(session_id, {})
+			return {
 				'session_id': session_id,
 				'nonce': nonce.hex(),
 				'ciphertext': ciphertext.hex(),
@@ -196,16 +229,13 @@ class FloraCryptoSystem:
 				'associated_data': associated_data.hex() if associated_data else None,
 				'timestamp': time.time(),
 				'threat_level': self.threat_level,
-				'system_health': self.system_health
+				'system_health': self.system_health,
+				'session_uses': info.get('uses'),
+				'session_max_uses': info.get('max_uses'),
+				'kem': info.get('kem'),
+				'session_salt': info.get('session_salt')
 			}
-			
-			# Incrementar contador de uso de la sesión
-			self.session_keys[session_id]['uses'] += 1
-			
-			return encrypted_data
-			
 		except Exception as e:
-			# Registrar intento fallido
 			self._record_failed_attempt("encryption", str(e))
 			raise
 	
@@ -214,161 +244,94 @@ class FloraCryptoSystem:
 					   master_key: bytes) -> bytes:
 		"""
 		Desencripta un mensaje usando el sistema FLORA.
-		
-		Args:
-			encrypted_data: Datos encriptados
-			master_key: Clave maestra
-			
-		Returns:
-			Mensaje desencriptado
 		"""
 		try:
-			# Verificar estado del sistema
 			if self.system_health < 0.1:
 				raise RuntimeError("Sistema comprometido - autodestrucción activada")
 			
-			# Extraer datos
 			session_id = encrypted_data['session_id']
 			nonce = bytes.fromhex(encrypted_data['nonce'])
 			ciphertext = bytes.fromhex(encrypted_data['ciphertext'])
 			tag = bytes.fromhex(encrypted_data['tag'])
 			associated_data = bytes.fromhex(encrypted_data['associated_data']) if encrypted_data.get('associated_data') else None
 			
-			# Verificar que la sesión existe
 			if session_id not in self.session_keys:
-				raise ValueError("Sesión no válida o expirada")
+				# Intento de reconstrucción stateless (solo PBKDF2)
+				salt_hex = encrypted_data.get('session_salt')
+				if not salt_hex:
+					raise ValueError("Sesión no válida o expirada")
+				session_salt = bytes.fromhex(salt_hex)
+				recovered_key = self._derive_session_key_pbkdf2_with_salt(master_key, session_salt)
+				self._store_session(session_id, recovered_key, session_salt=session_salt)
 			
 			session_key = self.session_keys[session_id]['key']
-			
-			# Crear cipher para desencriptación
 			cipher = AES.new(session_key, AES.MODE_GCM, nonce=nonce)
-			
-			# Agregar datos asociados si existen
 			if associated_data:
 				cipher.update(associated_data)
-			
-			# Desencriptar y verificar tag
 			plaintext = cipher.decrypt_and_verify(ciphertext, tag)
 			
-			# Incrementar contador de uso
-			self.session_keys[session_id]['uses'] += 1
+			# Marcar uso (y posible rotación)
+			self._touch_session_use(master_key, session_id)
 			
 			return plaintext
-			
 		except Exception as e:
-			# Registrar intento fallido
 			self._record_failed_attempt("decryption", str(e))
-			
-			# Si es un error de autenticación, activar autodestrucción
 			if "tag" in str(e).lower() or "verification" in str(e).lower():
 				self._trigger_autodestruction("authentication_failure", encrypted_data)
-			
 			raise
 	
 	def _record_failed_attempt(self, operation: str, error: str):
-		"""
-		Registra un intento fallido y evalúa amenazas.
-		
-		Args:
-			operation: Tipo de operación fallida
-			error: Descripción del error
-		"""
 		self.failed_attempts += 1
-		
-		# Registrar en historial de ataques
 		attack_record = {
 			'timestamp': time.time(),
 			'operation': operation,
 			'error': error,
 			'threat_level': min(1.0, self.failed_attempts / self.max_failed_attempts)
 		}
-		
 		self.attack_history.append(attack_record)
-		
-		# Evaluar nivel de amenaza
 		self._evaluate_threat_level()
-		
-		# Verificar si se debe activar bloqueo
 		if self.failed_attempts >= self.max_failed_attempts:
 			self._activate_lockout()
 	
 	def _evaluate_threat_level(self):
-		"""Evalúa el nivel de amenaza basado en el historial de ataques."""
 		if not self.attack_history:
 			self.threat_level = 0.0
 			return
-		
-		# Calcular amenaza basada en intentos recientes
-		recent_attacks = [a for a in self.attack_history 
-						 if time.time() - a['timestamp'] < 300]  # Últimos 5 minutos
-		
+		recent_attacks = [a for a in self.attack_history if time.time() - a['timestamp'] < 300]
 		if not recent_attacks:
 			self.threat_level = max(0.0, self.threat_level - 0.1)
 		else:
-			# Aumentar amenaza basado en frecuencia y severidad
-			attack_frequency = len(recent_attacks) / 5.0  # Normalizar a 5 minutos
+			attack_frequency = len(recent_attacks) / 5.0
 			severity = sum(a['threat_level'] for a in recent_attacks) / len(recent_attacks)
-			
 			self.threat_level = min(1.0, attack_frequency * 0.3 + severity * 0.7)
-		
-		# Ajustar salud del sistema
 		self.system_health = max(0.0, 1.0 - self.threat_level)
 	
 	def _activate_lockout(self):
-		"""Activa bloqueo temporal del sistema."""
-		lockout_duration = min(3600, 2 ** self.failed_attempts)  # Exponencial, máximo 1 hora
+		lockout_duration = min(3600, 2 ** self.failed_attempts)
 		self.lockout_until = time.time() + lockout_duration
-		
 		print(f"🚫 Sistema bloqueado por {lockout_duration} segundos debido a múltiples intentos fallidos")
 	
 	def _trigger_autodestruction(self, reason: str, context: Any):
-		"""
-		Activa el mecanismo de autodestrucción caótica.
-		
-		Args:
-			reason: Razón de la autodestrucción
-			context: Contexto del evento
-		"""
 		print(f"💥 ACTIVANDO AUTODESTRUCCIÓN CAÓTICA - Razón: {reason}")
-		
-		# Inicializar motor de destrucción con claves actuales
 		for session_id, session_data in self.session_keys.items():
 			try:
-				# Generar hash del contexto de ataque
 				attack_context = f"{reason}_{session_id}_{time.time()}".encode()
 				attack_hash = hashlib.sha256(attack_context).digest()
-				
-				# Corromper clave de sesión
 				corrupted_key = self.destruction_engine.corrupt_key_material(
 					session_data['key'], 
 					attack_hash
 				)
-				
-				# Reemplazar con clave corrompida
 				self.session_keys[session_id]['key'] = corrupted_key
 				self.session_keys[session_id]['corrupted'] = True
-				
 				print(f"🔑 Clave de sesión {session_id} corrompida irreversiblemente")
-				
 			except Exception as e:
 				print(f"❌ Error durante autodestrucción de sesión {session_id}: {e}")
-		
-		# Marcar sistema como comprometido
 		self.system_health = 0.0
 		self.threat_level = 1.0
-		
-		# Limpiar historial de ataques
 		self.attack_history.clear()
-		
 		print("💀 AUTODESTRUCCIÓN COMPLETADA - Sistema comprometido permanentemente")
 	
 	def get_system_status(self) -> Dict[str, Any]:
-		"""
-		Obtiene el estado actual del sistema.
-		
-		Returns:
-			Diccionario con estado del sistema
-		"""
 		return {
 			'system_health': self.system_health,
 			'threat_level': self.threat_level,
@@ -376,32 +339,20 @@ class FloraCryptoSystem:
 			'active_sessions': len(self.session_keys),
 			'lockout_active': time.time() < self.lockout_until,
 			'lockout_remaining': max(0, self.lockout_until - time.time()),
-			'recent_attacks': len([a for a in self.attack_history 
-								 if time.time() - a['timestamp'] < 300]),
+			'recent_attacks': len([a for a in self.attack_history if time.time() - a['timestamp'] < 300]),
 			'destruction_engine_stats': self.destruction_engine.get_destruction_statistics()
 		}
 	
 	def reset_system(self, new_master_key: bytes):
-		"""
-		Resetea el sistema con una nueva clave maestra.
-		
-		Args:
-			new_master_key: Nueva clave maestra
-		"""
 		if self.system_health < 0.1:
 			raise RuntimeError("No se puede resetear un sistema comprometido")
-		
-		# Limpiar estado
 		self.session_keys.clear()
 		self.attack_history.clear()
 		self.failed_attempts = 0
 		self.lockout_until = 0
 		self.threat_level = 0.0
 		self.system_health = 1.0
-		
-		# Resetear motor de destrucción
 		self.destruction_engine.reset_destruction_engine()
-		
 		print("🔄 Sistema FLORA reseteado exitosamente")
 
 
