@@ -59,3 +59,5 @@ print("Kyber habilitado:", bool(getattr(flora, 'kyber_enabled', False)))
 ## Soporte
 - Issues: abrir un ticket en el repositorio con detalles de tu entorno OS/Python.
 
+
+

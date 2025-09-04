@@ -8,3 +8,5 @@ fn main() {
 	let dec = aes_gcm_decrypt(&key, &enc.nonce, &enc.ciphertext, &ad).expect("decrypt");
 	println!("{}", String::from_utf8_lossy(&dec));
 }
+
+

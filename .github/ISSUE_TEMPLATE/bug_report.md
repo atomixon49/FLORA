@@ -68,3 +68,5 @@ flora = FloraCryptoSystem()
 - [ ] **Bajo**: Problema menor o cosmético
 
 
+
+

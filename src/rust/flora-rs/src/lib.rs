@@ -1,4 +1,4 @@
-use aes_gcm::aead::{Aead, KeyInit, OsRng};
+use aes_gcm::aead::{Aead, KeyInit};
 use aes_gcm::{Aes256Gcm, Nonce}; // Or Aes128Gcm, Aes192Gcm
 
 pub struct AesGcmResult {
@@ -30,4 +30,28 @@ pub fn aes_gcm_decrypt(key: &[u8], nonce: &[u8], ciphertext: &[u8], associated_d
 		.decrypt(nonce, aes_gcm::aead::Payload { msg: ciphertext, aad: associated_data })
 		.map_err(|e| e.to_string())?;
 	Ok(pt)
+}
+
+// ===== Python bindings (pyo3) =====
+use pyo3::prelude::*;
+
+#[pyfunction]
+fn py_encrypt(key: &[u8], plaintext: &[u8], associated_data: Option<&[u8]>) -> PyResult<(Vec<u8>, Vec<u8>)> {
+	let ad = associated_data.unwrap_or(&[]);
+	let out = aes_gcm_encrypt(key, plaintext, ad).map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e))?;
+	Ok((out.nonce, out.ciphertext))
+}
+
+#[pyfunction]
+fn py_decrypt(key: &[u8], nonce: &[u8], ciphertext: &[u8], associated_data: Option<&[u8]>) -> PyResult<Vec<u8>> {
+	let ad = associated_data.unwrap_or(&[]);
+	let out = aes_gcm_decrypt(key, nonce, ciphertext, ad).map_err(|e| PyErr::new::<pyo3::exceptions::PyValueError, _>(e))?;
+	Ok(out)
+}
+
+#[pymodule]
+fn flora_rs(_py: Python, m: &PyModule) -> PyResult<()> {
+	m.add_function(wrap_pyfunction!(py_encrypt, m)?)?;
+	m.add_function(wrap_pyfunction!(py_decrypt, m)?)?;
+	Ok(())
 }

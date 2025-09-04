@@ -98,6 +98,22 @@ def aes_gcm_decrypt(key: bytes, nonce: bytes, ciphertext: bytes, tag: bytes, ass
 	return bytes(pt_buf)[: pt_len.value]
 
 
+# Funciones wrapper para benchmarks
+def cpp_encrypt(key: bytes, plaintext: bytes, associated_data: bytes = b'') -> Tuple[bytes, bytes]:
+    """Wrapper simple para encriptación C++"""
+    import secrets
+    nonce = secrets.token_bytes(12)
+    ciphertext, tag = aes_gcm_encrypt(key, nonce, plaintext, associated_data)
+    return nonce, ciphertext + tag
+
+def cpp_decrypt(key: bytes, nonce: bytes, ciphertext: bytes, associated_data: bytes = b'') -> bytes:
+    """Wrapper simple para desencriptación C++"""
+    if len(ciphertext) < 16:
+        raise ValueError("Ciphertext too short")
+    tag = ciphertext[-16:]
+    ciphertext_only = ciphertext[:-16]
+    return aes_gcm_decrypt(key, nonce, ciphertext_only, tag, associated_data)
+
 if __name__ == "__main__":
 	k = b"\x11" * 32
 	n = b"\x22" * 12

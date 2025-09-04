@@ -116,3 +116,5 @@ Si tienes mockups o prototipos, compártelos aquí.
 **Nota**: Esta es una solicitud de característica. Por favor, mantén la discusión civilizada y constructiva. 🌸
 
 
+
+

@@ -8,7 +8,7 @@ license = "Apache-2.0"
 [lib]
 name = "flora_rs"
 path = "src/lib.rs"
-crate-type = ["rlib"]
+crate-type = ["rlib", "cdylib"]
 
 [[bin]]
 name = "flora_example"
@@ -21,3 +21,4 @@ aes-gcm = { version = "0.10", features = ["aes"] }
 aes = "0.8"
 hex = "0.4"
 rand = "0.8"
+pyo3 = { version = "0.21", features = ["extension-module"] }
