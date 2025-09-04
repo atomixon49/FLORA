@@ -10,6 +10,10 @@ numpy>=1.21.0                 # Operaciones numéricas eficientes
 scipy>=1.7.0                  # Funciones matemáticas avanzadas
 matplotlib>=3.5.0             # Visualización del mapa caótico
 
+# API REST
+fastapi>=0.110.0
+uvicorn>=0.23.0
+
 # Testing y desarrollo
 pytest>=6.2.5                 # Framework de testing
 pytest-cov>=2.12.0            # Cobertura de código

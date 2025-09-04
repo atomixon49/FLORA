@@ -157,6 +157,78 @@ Nota: Si no hay librería Kyber instalada, FLORA usará automáticamente PBKDF2 
 
 ---
 
+## 🌐 API REST
+
+### Iniciar servidor
+```bash
+# Desde el directorio flora
+python -m uvicorn python.api:app --reload --port 8000
+# Docs interactivas: http://127.0.0.1:8000/docs
+```
+
+Opcional: configurar API Key
+```bash
+# Windows PowerShell
+$env:FLORA_API_KEY = "mi-api-key"
+# Linux/macOS
+export FLORA_API_KEY="mi-api-key"
+```
+
+### Ejemplos (PowerShell)
+
+- Encrypt
+```powershell
+$headers = @{ 'X-API-Key' = 'flora-dev-key' }  # o tu API key
+$body = @{
+  password = 'Prueba123'
+  message = 'Hola FLORA desde API'
+  session_id = 'api_demo'
+  associated_data_hex = '414243'
+  use_kyber = $false
+} | ConvertTo-Json
+
+$res = Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/encrypt -Headers $headers -ContentType 'application/json' -Body $body
+$res | ConvertTo-Json -Depth 6 | Out-File enc.json
+```
+
+- Decrypt
+```powershell
+$headers = @{ 'X-API-Key' = 'flora-dev-key' }
+$bundle = Get-Content enc.json -Raw
+$body = @{ password = 'Prueba123'; bundle = ($bundle | ConvertFrom-Json) } | ConvertTo-Json -Depth 6
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/decrypt -Headers $headers -ContentType 'application/json' -Body $body
+```
+
+- Status
+```powershell
+$headers = @{ 'X-API-Key' = 'flora-dev-key' }
+Invoke-RestMethod -Method Get -Uri http://127.0.0.1:8000/status -Headers $headers
+```
+
+### Ejemplos (cURL)
+
+- Encrypt
+```bash
+curl -s -X POST http://127.0.0.1:8000/encrypt \
+  -H "X-API-Key: flora-dev-key" \
+  -H "Content-Type: application/json" \
+  -d '{"password":"Prueba123","message":"Hola FLORA desde API","session_id":"api_demo","associated_data_hex":"414243","use_kyber":false}' > enc.json
+```
+
+- Decrypt
+```bash
+curl -s -X POST http://127.0.0.1:8000/decrypt \
+  -H "X-API-Key: flora-dev-key" \
+  -H "Content-Type: application/json" \
+  -d "$(jq -c --arg pwd Prueba123 '{password:$pwd, bundle:.}' enc.json)"
+```
+
+Notas:
+- El bundle de `/encrypt` incluye `master_salt` y `session_salt` para permitir desencriptar sin estado del servidor.
+- En PowerShell, puedes encadenar comandos con `;`.
+
+---
+
 ## 🚀 **Roadmap de Desarrollo**
 
 ### 🌱 **FASE 1: Prototipo Básico** ✅
