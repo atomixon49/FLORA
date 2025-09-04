@@ -46,6 +46,7 @@
 - **PBKDF2**: Derivación de claves con 100,000 iteraciones
 - **Perfect Forward Secrecy**: Claves de sesión únicas
 - **Nonces aleatorios**: 96 bits de entropía
+- **(Fase 2) Kyber KEM opcional**: Encapsulamiento post‑cuántico de la clave de sesión cuando hay backend disponible
 
 ### 🌪️ **Motor de Autodestrucción Caótica**
 - **Mapa logístico**: r = 3.998785 (régimen caótico)
@@ -78,13 +79,11 @@ pip install -e .
 
 ### 🪟 **Windows (Automático)**
 ```cmd
-# Ejecutar script de instalación
 install.bat
 ```
 
 ### 🐧 **Linux/macOS (Automático)**
 ```bash
-# Ejecutar script de instalación
 chmod +x install.sh
 ./install.sh
 ```
@@ -100,23 +99,19 @@ python test_flora.py
 
 ### 🔬 **Pruebas Individuales**
 ```python
-from flora import FloraCryptoSystem, ChaoticDestructionEngine
+from flora import FloraCryptoSystem
 
-# Crear sistema
-flora = FloraCryptoSystem()
-
-# Generar clave
+flora = FloraCryptoSystem(use_kyber=True)  # Kyber opcional (fallback automático si no hay backend)
 password = "MI_SUPER_PASSWORD_2024"
 master_key, salt = flora.generate_master_key(password)
 
-# Encriptar mensaje
-message = b"¡Hola FLORA! 🌸"
+message = b"Hola FLORA"
 encrypted = flora.encrypt_message(message, master_key, "test_session")
-
-# Desencriptar
-decrypted = flora.decrypt_message(encrypted, master_key)
-print(f"Mensaje: {decrypted.decode()}")
+plaintext = flora.decrypt_message(encrypted, master_key)
+print(plaintext)
 ```
+
+Nota: Si no hay librería Kyber instalada, FLORA usará automáticamente PBKDF2 + AES‑GCM sin requerir cambios.
 
 ---
 
@@ -137,11 +132,11 @@ print(f"Mensaje: {decrypted.decode()}")
 ┌─────────────────────────────────────────────────────────────┐
 │                    🌸 FLORA SYSTEM                          │
 ├─────────────────────────────────────────────────────────────┤
-│  🔐 LAYER 1: AES-256-GCM Encryption                      │
-│  🌪️ LAYER 2: Chaotic Destruction Engine                  │
-│  🛡️ LAYER 3: Threat Detection & Response                 │
-│  🔑 LAYER 4: Key Management & Derivation                  │
-│  📊 LAYER 5: System Health & Monitoring                   │
+│  🔐 LAYER 1: AES-256-GCM Encryption                          │
+│  🌪️ LAYER 2: Chaotic Destruction Engine                      │
+│  🛡️ LAYER 3: Threat Detection & Response                     │
+│  🔑 LAYER 4: Key Management & Derivation + (Kyber KEM opc.)  │
+│  📊 LAYER 5: System Health & Monitoring                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -158,6 +153,7 @@ print(f"Mensaje: {decrypted.decode()}")
 - Encriptación/desencriptación AES-GCM
 - Sistema de detección de amenazas
 - Mecanismo de autodestrucción
+- (Opcional) Intercambio de clave con **Kyber KEM**
 
 ---
 
@@ -169,11 +165,10 @@ print(f"Mensaje: {decrypted.decode()}")
 - [x] Gestión de claves y sesiones
 - [x] Suite completa de pruebas
 
-### 🌿 **FASE 2: Post-Cuántico** 🚧
-- [ ] Integración CRYSTALS-Kyber
-- [ ] Optimizaciones de performance
-- [ ] Interfaz de línea de comandos
-- [ ] API REST
+### 🌿 **FASE 2: Post-Cuántico** ✅ (Integración opcional)
+- [x] Integración opcional con CRYSTALS-Kyber (si hay backend disponible)
+- [x] Fallback transparente a PBKDF2 + AES-GCM
+- [ ] Guías para instalar backend Kyber (pqcrypto/pykyber)
 
 ### 🌳 **FASE 3: Multi-Lenguaje** 📋
 - [ ] Implementación en C++
@@ -197,55 +192,11 @@ FLORA es el resultado de años de investigación en:
 - **Biomimética computacional**
 - **Inteligencia artificial aplicada**
 
-### 📚 **Publicaciones Relacionadas**
-- *"Chaotic Destruction in Post-Quantum Cryptography"* (2024)
-- *"Biomimetic Encryption Systems"* (2024)
-- *"FLORA: A New Paradigm in Data Protection"* (2024)
-
----
-
-## 🤝 **Contribuir**
-
-¡FLORA es un proyecto de código abierto y necesitamos tu ayuda!
-
-### 🐛 **Reportar Bugs**
-1. Ve a [Issues](https://github.com/atomixon49/CRYPTO-FLOWER/issues)
-2. Crea un nuevo issue
-3. Describe el problema detalladamente
-
-### 💡 **Sugerir Mejoras**
-1. Fork el repositorio
-2. Crea una nueva rama
-3. Implementa tu idea
-4. Envía un Pull Request
-
-### 🧪 **Testing**
-- Ejecuta las pruebas: `python test_flora.py`
-- Reporta fallas en los tests
-- Sugiere nuevos casos de prueba
-
 ---
 
 ## 📄 **Licencia**
 
 Este proyecto está licenciado bajo la **Apache License 2.0** - ver el archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## 🌟 **Agradecimientos**
-
-- **Equipo Crypto Flower** 🌸
-- **Comunidad de criptografía** 🔐
-- **Investigadores en sistemas caóticos** 🌪️
-- **Contribuidores de código abierto** 💻
-
----
-
-## 📞 **Contacto**
-
-- **GitHub**: [@atomixon49](https://github.com/atomixon49)
-- **Proyecto**: [CRYPTO-FLOWER](https://github.com/atomixon49/CRYPTO-FLOWER)
-- **Issues**: [Reportar problemas](https://github.com/atomixon49/CRYPTO-FLOWER/issues)
 
 ---
 
@@ -258,3 +209,4 @@ Este proyecto está licenciado bajo la **Apache License 2.0** - ver el archivo [
 [⬆️ Volver arriba](#-flora---sistema-de-cifrado-híbrido-post-cuántico)
 
 </div>
+

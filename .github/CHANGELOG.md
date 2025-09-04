@@ -152,3 +152,4 @@ FLORA usa [Semantic Versioning](https://semver.org/):
 **Nota**: Este changelog se actualiza con cada release. Para más detalles, consulta los [releases de GitHub](https://github.com/atomixon49/CRYPTO-FLOWER/releases).
 
 **Recuerda**: FLORA crece y evoluciona gracias a tu feedback y contribuciones. 🌸✨
+

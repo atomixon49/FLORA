@@ -202,3 +202,4 @@ skips = ["B101", "B601"]
 
 [tool.safety]
 output = "json"
+

@@ -136,3 +136,4 @@ updates:
     allow:
       # Allow updates for all packages
       - dependency-type: "all"
+

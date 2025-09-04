@@ -66,3 +66,4 @@ flora = FloraCryptoSystem()
 - [ ] **Alto**: Funcionalidad principal afectada
 - [ ] **Medio**: Funcionalidad secundaria afectada
 - [ ] **Bajo**: Problema menor o cosmético
+

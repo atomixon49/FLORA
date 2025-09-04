@@ -47,3 +47,4 @@ def quick_test():
     except Exception as e:
         print(f"❌ Error durante prueba rápida: {e}")
         return False
+

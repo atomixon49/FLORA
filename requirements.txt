@@ -24,3 +24,4 @@ tqdm>=4.62.0                  # Barras de progreso
 # Para desarrollo y debugging
 ipython>=7.25.0               # Shell interactivo mejorado
 jupyter>=1.0.0                # Notebooks para experimentación
+

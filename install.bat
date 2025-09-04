@@ -70,3 +70,4 @@ echo 🌸 ¡Gracias por instalar FLORA - Crypto Flower!
 echo.
 
 pause
+

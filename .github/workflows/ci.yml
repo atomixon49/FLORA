@@ -136,3 +136,4 @@ jobs:
         asset_path: ./dist/flora_crypto-*.whl
         asset_name: flora_crypto-${{ github.run_number }}-py3-none-any.whl
         asset_content_type: application/octet-stream
+
