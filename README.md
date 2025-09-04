@@ -282,3 +282,34 @@ Este proyecto está licenciado bajo la **Apache License 2.0** - ver el archivo [
 
 </div>
 
+---
+
+## 🛠️ Build C++ (Windows)
+
+Requisitos:
+- CMake 3.15+
+- MSVC (Build Tools) o Visual Studio 2019+
+- OpenSSL (librerías de desarrollo instaladas y en PATH)
+
+Pasos:
+```powershell
+# Ubicación del proyecto C++
+cd flora\src\cpp
+
+# Generar build (Release)
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+# Compilar
+cmake --build build --config Release
+
+# Ejecutar ejemplo
+.\build\Release\flora_example.exe
+```
+Salida esperada:
+```
+Hola FLORA desde C++
+```
+Notas:
+- Si CMake no encuentra OpenSSL, verifica la instalación y variables de entorno.
+- Puedes usar vcpkg/Chocolatey para instalar OpenSSL en Windows.
+

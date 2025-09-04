@@ -88,3 +88,4 @@ def try_create_kyber() -> Optional[KyberKEM]:
 	"""Crea instancia si hay backend disponible; de lo contrario, None."""
 	kem = KyberKEM()
 	return kem if kem.available else None
+
