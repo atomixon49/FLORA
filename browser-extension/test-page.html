@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLORA Test Page - Formularios de Prueba</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .sensitive {
+            border-color: #ffc107;
+            background-color: #fff3cd;
+        }
+        
+        .encrypted {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .status.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .instructions h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        
+        .instructions ol {
+            color: #6c757d;
+        }
+        
+        .flora-indicator {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            opacity: 0.7;
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 FLORA Test Page</h1>
+        
+        <div class="instructions">
+            <h3>Instrucciones de Prueba:</h3>
+            <ol>
+                <li>Instala la extensión FLORA en tu navegador</li>
+                <li>Haz clic en el icono de FLORA en la barra de herramientas</li>
+                <li>Configura una clave maestra (32 bytes en hex)</li>
+                <li>Haz clic en "Cifrar Página" para proteger los campos sensibles</li>
+                <li>Observa cómo los campos cambian de color y se cifran</li>
+                <li>Usa "Desifrar Página" para restaurar los valores originales</li>
+            </ol>
+        </div>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="username">Usuario:</label>
+                <input type="text" id="username" name="username" placeholder="Ingresa tu nombre de usuario">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Contraseña:</label>
+                <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="tu@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="secret">Información Secreta:</label>
+                <input type="text" id="secret" name="secret" placeholder="Datos confidenciales">
+            </div>
+            
+            <div class="form-group">
+                <label for="creditCard">Tarjeta de Crédito:</label>
+                <input type="text" id="creditCard" name="creditCard" placeholder="1234-5678-9012-3456">
+            </div>
+            
+            <div class="form-group">
+                <label for="ssn">SSN/Seguro Social:</label>
+                <input type="text" id="ssn" name="ssn" placeholder="123-45-6789">
+            </div>
+            
+            <div class="form-group">
+                <label for="privateNotes">Notas Privadas:</label>
+                <textarea id="privateNotes" name="privateNotes" rows="4" placeholder="Escribe tus notas privadas aquí..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" name="apiKey" placeholder="sk-1234567890abcdef">
+            </div>
+            
+            <div class="form-group">
+                <label for="token">Token de Acceso:</label>
+                <input type="text" id="token" name="token" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...">
+            </div>
+            
+            <button type="button" class="btn" onclick="fillTestData()">Llenar Datos de Prueba</button>
+            <button type="button" class="btn" onclick="clearForm()">Limpiar Formulario</button>
+        </form>
+        
+        <div id="status" class="status info" style="display: none;">
+            Estado de la extensión FLORA
+        </div>
+    </div>
+    
+    <script>
+        function fillTestData() {
+            document.getElementById('username').value = 'usuario_test';
+            document.getElementById('password').value = 'password123';
+            document.getElementById('email').value = 'test@flora.com';
+            document.getElementById('secret').value = 'Información muy confidencial';
+            document.getElementById('creditCard').value = '4111-1111-1111-1111';
+            document.getElementById('ssn').value = '123-45-6789';
+            document.getElementById('privateNotes').value = 'Estas son mis notas privadas que necesitan protección.';
+            document.getElementById('apiKey').value = 'sk-1234567890abcdef1234567890abcdef';
+            document.getElementById('token').value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+            
+            showStatus('Datos de prueba cargados. Ahora puedes probar el cifrado con FLORA.', 'info');
+        }
+        
+        function clearForm() {
+            document.getElementById('testForm').reset();
+            showStatus('Formulario limpiado.', 'info');
+        }
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Detectar si FLORA está activo
+        function checkFloraStatus() {
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                showStatus('FLORA detectado. La extensión está lista para usar.', 'success');
+            } else {
+                showStatus('FLORA no detectado. Asegúrate de que la extensión esté instalada y habilitada.', 'warning');
+            }
+        }
+        
+        // Verificar estado al cargar la página
+        window.addEventListener('load', checkFloraStatus);
+        
+        // Mostrar instrucciones adicionales
+        console.log('🌸 FLORA Test Page cargada');
+        console.log('Para probar la extensión:');
+        console.log('1. Instala FLORA desde chrome://extensions/');
+        console.log('2. Recarga esta página');
+        console.log('3. Haz clic en el icono de FLORA en la barra de herramientas');
+        console.log('4. Configura una clave y prueba el cifrado');
+    </script>
+</body>
+</html>

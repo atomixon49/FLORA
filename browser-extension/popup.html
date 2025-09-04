@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLORA - Cifrado Seguro</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span class="flower">🌸</span>
+                <h1>FLORA</h1>
+            </div>
+            <div class="status" id="status">
+                <span class="status-dot"></span>
+                <span class="status-text">Inactivo</span>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Key Management -->
+            <div class="section">
+                <h3>🔑 Gestión de Claves</h3>
+                <div class="key-input">
+                    <input type="password" id="masterKey" placeholder="Clave maestra" maxlength="32">
+                    <button id="generateKey" class="btn-secondary">Generar</button>
+                </div>
+                <div class="key-status">
+                    <span id="keyStatus">Sin clave configurada</span>
+                </div>
+            </div>
+
+            <!-- Encryption Controls -->
+            <div class="section">
+                <h3>🔐 Cifrado</h3>
+                <div class="controls">
+                    <button id="encryptPage" class="btn-primary">
+                        <span class="icon">🔒</span>
+                        Cifrar Página
+                    </button>
+                    <button id="decryptPage" class="btn-secondary">
+                        <span class="icon">🔓</span>
+                        Desifrar Página
+                    </button>
+                </div>
+            </div>
+
+            <!-- Auto-Protection -->
+            <div class="section">
+                <h3>🛡️ Protección Automática</h3>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="autoProtect">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Protección automática</span>
+                </div>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="autoDestroy">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="toggle-label">Autodestrucción</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="section">
+                <h3>📊 Estadísticas</h3>
+                <div class="stats">
+                    <div class="stat">
+                        <span class="stat-label">Elementos cifrados:</span>
+                        <span class="stat-value" id="encryptedCount">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Sesión activa:</span>
+                        <span class="stat-value" id="sessionTime">00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="links">
+                <a href="#" id="settings">Configuración</a>
+                <a href="#" id="help">Ayuda</a>
+            </div>
+            <div class="version">v1.0.0</div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

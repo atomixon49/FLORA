@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLORA Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .icon-container {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 5px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5a6fd8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌸 FLORA Icon Generator</h1>
+    <p>Genera iconos para la extensión de navegador</p>
+    
+    <div class="icon-container">
+        <h3>16x16</h3>
+        <canvas id="icon16" width="16" height="16"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon16', 'icon16.png')">Descargar</button>
+    </div>
+    
+    <div class="icon-container">
+        <h3>32x32</h3>
+        <canvas id="icon32" width="32" height="32"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon32', 'icon32.png')">Descargar</button>
+    </div>
+    
+    <div class="icon-container">
+        <h3>48x48</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon48', 'icon48.png')">Descargar</button>
+    </div>
+    
+    <div class="icon-container">
+        <h3>128x128</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon128', 'icon128.png')">Descargar</button>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <button onclick="generateAllIcons()">Generar Todos los Iconos</button>
+    </div>
+
+    <script>
+        function drawIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // Fondo con gradiente
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Borde redondeado
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.2);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Flor central
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const flowerSize = size * 0.6;
+            
+            // Pétalos
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1, size / 32);
+            
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * 2 * Math.PI) / 5;
+                const petalX = centerX + Math.cos(angle) * flowerSize * 0.3;
+                const petalY = centerY + Math.sin(angle) * flowerSize * 0.3;
+                
+                ctx.beginPath();
+                ctx.ellipse(petalX, petalY, flowerSize * 0.15, flowerSize * 0.25, angle, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            
+            // Centro de la flor
+            ctx.fillStyle = '#ffd700';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, flowerSize * 0.15, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Texto "F" pequeño
+            if (size >= 32) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `bold ${size * 0.3}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('F', centerX, centerY + size * 0.1);
+            }
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function generateAllIcons() {
+            drawIcon('icon16', 16);
+            drawIcon('icon32', 32);
+            drawIcon('icon48', 48);
+            drawIcon('icon128', 128);
+        }
+        
+        // Generar iconos al cargar la página
+        window.onload = function() {
+            generateAllIcons();
+        };
+    </script>
+</body>
+</html>

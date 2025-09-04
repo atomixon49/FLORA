@@ -1,0 +1,222 @@
+/* FLORA Browser Extension - Content Script Styles */
+
+/* Indicador de cifrado */
+.flora-indicator {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    opacity: 0.7;
+    cursor: pointer;
+    z-index: 1000;
+    transition: opacity 0.3s;
+}
+
+.flora-indicator:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.2);
+}
+
+/* Campos sensibles detectados */
+input[data-flora-sensitive] {
+    border-left: 3px solid #ffc107 !important;
+    background-color: #fff3cd !important;
+}
+
+/* Campos cifrados */
+input[data-flora-encrypted] {
+    border-color: #28a745 !important;
+    background-color: #d4edda !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+/* Banner de cifrado */
+#flora-encryption-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 10000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Notificaciones */
+.flora-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2ed573;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 10001;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.flora-notification.error {
+    background: #ff4757;
+}
+
+.flora-notification.warning {
+    background: #ffa502;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Overlay de protección */
+.flora-protection-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    text-align: center;
+}
+
+.flora-protection-overlay .message {
+    background: #2c3e50;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* Estilos para formularios */
+form[data-flora-protected] {
+    position: relative;
+}
+
+form[data-flora-protected]::before {
+    content: "🌸 FLORA PROTEGIDO";
+    position: absolute;
+    top: -25px;
+    right: 0;
+    background: #667eea;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Campos de contraseña especiales */
+input[type="password"][data-flora-encrypted] {
+    letter-spacing: 2px;
+}
+
+/* Textareas cifradas */
+textarea[data-flora-encrypted] {
+    font-family: 'Courier New', monospace !important;
+    line-height: 1.4;
+}
+
+/* Indicador de estado */
+.flora-status-indicator {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.flora-status-indicator:hover {
+    opacity: 1;
+}
+
+.flora-status-indicator.active {
+    background: #27ae60;
+}
+
+.flora-status-indicator.encrypting {
+    background: #f39c12;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+/* Estilos para elementos específicos */
+.flora-highlight {
+    outline: 2px solid #667eea !important;
+    outline-offset: 2px;
+}
+
+.flora-warning {
+    border: 2px solid #ff4757 !important;
+    background-color: #ffe6e6 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flora-indicator {
+        right: 4px;
+        font-size: 10px;
+    }
+    
+    #flora-encryption-banner {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .flora-notification {
+        right: 10px;
+        top: 10px;
+        font-size: 12px;
+        padding: 8px 12px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    input[data-flora-sensitive] {
+        background-color: #2d2d2d !important;
+        border-left-color: #ffc107 !important;
+    }
+    
+    input[data-flora-encrypted] {
+        background-color: #1e3a1e !important;
+        border-color: #28a745 !important;
+    }
+}
