@@ -1,0 +1,1 @@
+C:\Users\Janus\Videos\PRYCT\NUEVO-1\flora\src\rust\flora-rs\target\release\flora_example.exe: C:\Users\Janus\Videos\PRYCT\NUEVO-1\flora\src\rust\flora-rs\src\bin\example.rs C:\Users\Janus\Videos\PRYCT\NUEVO-1\flora\src\rust\flora-rs\src\lib.rs

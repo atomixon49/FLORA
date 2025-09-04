@@ -1,0 +1,23 @@
+[package]
+name = "flora_rs"
+version = "0.1.0"
+edition = "2021"
+description = "FLORA core (Rust) - AES-GCM encrypt/decrypt"
+license = "Apache-2.0"
+
+[lib]
+name = "flora_rs"
+path = "src/lib.rs"
+crate-type = ["rlib"]
+
+[[bin]]
+name = "flora_example"
+path = "src/bin/example.rs"
+
+authors = ["Crypto Flower Team"]
+
+[dependencies]
+aes-gcm = { version = "0.10", features = ["aes"] }
+aes = "0.8"
+hex = "0.4"
+rand = "0.8"
