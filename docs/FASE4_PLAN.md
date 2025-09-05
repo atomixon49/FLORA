@@ -183,3 +183,4 @@ Llevar FLORA del laboratorio al mundo real, creando aplicaciones prácticas que 
 5. **Iniciar documentación** para desarrolladores
 
 **¿Por cuál componente te gustaría comenzar?** 🌸
+

@@ -1,0 +1,15 @@
+{
+  "name": "flora-test",
+  "version": "1.0.0",
+  "main": "App.js",
+  "scripts": {
+    "start": "npx expo start",
+    "web": "npx expo start --web"
+  },
+  "dependencies": {
+    "@react-native/metro-config": "^0.80.2",
+    "expo": "^53.0.22",
+    "react": "18.2.0",
+    "react-native": "^0.72.17"
+  }
+}

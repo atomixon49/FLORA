@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 FLORA - Test Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .encrypt-button {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .decrypt-button {
+            background: #2196F3;
+            color: white;
+        }
+
+        .clear-button {
+            background: #f44336;
+            color: white;
+            width: 100%;
+        }
+
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 100px;
+            word-break: break-all;
+        }
+
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .info-text {
+            color: #1976d2;
+            line-height: 1.5;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">🌸 FLORA</div>
+            <div class="subtitle">Sistema de Cifrado Híbrido Post-Cuántico</div>
+        </div>
+
+        <div class="content">
+            <div id="status"></div>
+
+            <div class="section">
+                <div class="section-title">🔑 Contraseña</div>
+                <input type="password" id="password" class="input" placeholder="Ingresa tu contraseña">
+            </div>
+
+            <div class="section">
+                <div class="section-title">📝 Texto a Cifrar/Desifrar</div>
+                <textarea id="inputText" class="input textarea" placeholder="Escribe tu texto aquí..."></textarea>
+            </div>
+
+            <div class="button-container">
+                <button class="button encrypt-button" onclick="encryptText()">🔐 Cifrar</button>
+                <button class="button decrypt-button" onclick="decryptText()">🔓 Desifrar</button>
+            </div>
+
+            <div class="section">
+                <div class="section-title">📄 Resultado</div>
+                <div id="result" class="result" placeholder="El resultado aparecerá aquí..."></div>
+            </div>
+
+            <button class="button clear-button" onclick="clearAll()">🗑️ Limpiar Todo</button>
+
+            <div class="info">
+                <div class="info-title">ℹ️ Información</div>
+                <div class="info-text">
+                    • Esta es una versión de prueba para demostración<br>
+                    • El cifrado es simulado para fines educativos<br>
+                    • En producción se usaría el motor Rust de FLORA<br>
+                    • Los datos se procesan localmente en tu navegador
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            setTimeout(() => {
+                status.textContent = '';
+                status.className = 'status';
+            }, 3000);
+        }
+
+        function simulateEncryption(text, key) {
+            const keyBytes = new TextEncoder().encode(key);
+            const textBytes = new TextEncoder().encode(text);
+            const encrypted = new Uint8Array(textBytes.length);
+            
+            for (let i = 0; i < textBytes.length; i++) {
+                encrypted[i] = textBytes[i] ^ keyBytes[i % keyBytes.length];
+            }
+            
+            return 'FLORA:' + Array.from(encrypted)
+                .map(b => b.toString(16).padStart(2, '0'))
+                .join('');
+        }
+
+        function simulateDecryption(encrypted, key) {
+            if (!encrypted.startsWith('FLORA:')) {
+                throw new Error('Formato de texto cifrado inválido');
+            }
+
+            const hexData = encrypted.substring(6);
+            const encryptedBytes = new Uint8Array(hexData.length / 2);
+            
+            for (let i = 0; i < hexData.length; i += 2) {
+                encryptedBytes[i / 2] = parseInt(hexData.substr(i, 2), 16);
+            }
+
+            const keyBytes = new TextEncoder().encode(key);
+            const decrypted = new Uint8Array(encryptedBytes.length);
+            
+            for (let i = 0; i < encryptedBytes.length; i++) {
+                decrypted[i] = encryptedBytes[i] ^ keyBytes[i % keyBytes.length];
+            }
+            
+            return new TextDecoder().decode(decrypted);
+        }
+
+        function encryptText() {
+            const password = document.getElementById('password').value;
+            const inputText = document.getElementById('inputText').value;
+
+            if (!inputText.trim()) {
+                showStatus('Por favor ingresa texto para cifrar', 'error');
+                return;
+            }
+
+            if (!password.trim()) {
+                showStatus('Por favor ingresa una contraseña', 'error');
+                return;
+            }
+
+            try {
+                const encrypted = simulateEncryption(inputText, password);
+                document.getElementById('result').textContent = encrypted;
+                showStatus('✅ Texto cifrado correctamente', 'success');
+            } catch (error) {
+                showStatus('❌ Error al cifrar el texto', 'error');
+            }
+        }
+
+        function decryptText() {
+            const password = document.getElementById('password').value;
+            const result = document.getElementById('result').textContent;
+
+            if (!result.trim()) {
+                showStatus('No hay texto cifrado para desifrar', 'error');
+                return;
+            }
+
+            if (!password.trim()) {
+                showStatus('Por favor ingresa la contraseña', 'error');
+                return;
+            }
+
+            try {
+                const decrypted = simulateDecryption(result, password);
+                document.getElementById('inputText').value = decrypted;
+                document.getElementById('result').textContent = 'Texto desifrado: ' + decrypted;
+                showStatus('✅ Texto desifrado correctamente', 'success');
+            } catch (error) {
+                showStatus('❌ Error al desifrar. Verifica la contraseña', 'error');
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('password').value = '';
+            document.getElementById('inputText').value = '';
+            document.getElementById('result').textContent = '';
+            showStatus('🗑️ Todo limpiado', 'success');
+        }
+
+        // Cargar datos de ejemplo
+        window.onload = function() {
+            showStatus('🌸 FLORA Test App cargada correctamente', 'success');
+        };
+    </script>
+</body>
+</html>

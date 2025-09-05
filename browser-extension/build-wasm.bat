@@ -44,3 +44,4 @@ if %errorlevel% equ 0 (
 
 echo 🌸 Build completado
 pause
+

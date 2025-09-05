@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "FLORA Test",
+    "slug": "flora-test",
+    "version": "1.0.0",
+    "orientation": "portrait"
+  }
+}

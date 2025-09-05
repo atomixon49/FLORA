@@ -97,3 +97,4 @@ Write-Host "✅ icon128.png creado" -ForegroundColor Green
 
 Write-Host "🎉 Todos los iconos creados exitosamente!" -ForegroundColor Magenta
 Write-Host "Ahora puedes cargar la extensión en Chrome" -ForegroundColor Yellow
+

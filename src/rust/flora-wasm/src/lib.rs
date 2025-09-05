@@ -174,3 +174,4 @@ pub fn main() {
     console_error_panic_hook::set_once();
     console_log!("🌸 FLORA WASM initialized");
 }
+

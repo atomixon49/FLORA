@@ -316,3 +316,4 @@ class FloraBackground {
 
 // Inicializar background script
 new FloraBackground();
+

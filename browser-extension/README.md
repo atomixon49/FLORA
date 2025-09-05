@@ -199,3 +199,4 @@ Apache License 2.0 - Ver [LICENSE](../../LICENSE) para más detalles.
 ---
 
 **🌸 FLORA Browser Extension - Cifrado seguro en tu navegador 🌸**
+
