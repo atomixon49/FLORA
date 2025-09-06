@@ -1,0 +1,44 @@
+{
+  "recommended_versions": {
+    "actions/checkout": "v4",
+    "actions/setup-python": "v5",
+    "actions/upload-artifact": "v4",
+    "actions/download-artifact": "v4",
+    "actions/cache": "v4",
+    "actions/github-script": "v7",
+    "docker/setup-buildx-action": "v3",
+    "docker/build-push-action": "v5"
+  },
+  "deprecated_versions": {
+    "actions/upload-artifact": "v3",
+    "actions/download-artifact": "v3",
+    "actions/checkout": "v3",
+    "actions/setup-python": "v4"
+  },
+  "migration_notes": {
+    "actions/upload-artifact": {
+      "from": "v3",
+      "to": "v4",
+      "changes": [
+        "Nuevo par\u00e1metro 'retention-days'",
+        "Mejor manejo de archivos grandes",
+        "Soporte mejorado para paths"
+      ]
+    },
+    "actions/setup-python": {
+      "from": "v4",
+      "to": "v5",
+      "changes": [
+        "Mejor cache de pip",
+        "Soporte para Python 3.13",
+        "Mejor detecci\u00f3n de versiones"
+      ]
+    }
+  },
+  "best_practices": [
+    "Usar siempre la versi\u00f3n m\u00e1s reciente estable",
+    "Especificar versiones exactas (no @latest)",
+    "Revisar changelog antes de actualizar",
+    "Probar en branch de desarrollo primero"
+  ]
+}
