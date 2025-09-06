@@ -518,3 +518,4 @@ sudo chmod -R 755 /opt/flora/
 **🌸 FLORA - Guía de Despliegue Completa**
 
 *Desarrollado para facilitar el despliegue en cualquier entorno*
+

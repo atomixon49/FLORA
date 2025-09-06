@@ -44,6 +44,7 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+
 def _connect_db(db_path: Path) -> sqlite3.Connection:
     try:
         conn = sqlite3.connect(str(db_path))
@@ -52,6 +53,7 @@ def _connect_db(db_path: Path) -> sqlite3.Connection:
     except Exception as e:
         logger.error(f"No se pudo conectar a la base de datos {db_path}: {e}")
         raise
+
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
@@ -62,6 +64,7 @@ async def dashboard(request: Request):
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     }
     return templates.TemplateResponse("dashboard.html", context)
+
 
 @app.get("/api/security/metrics")
 async def get_security_metrics() -> Dict[str, Any]:
@@ -178,6 +181,7 @@ async def get_security_metrics() -> Dict[str, Any]:
             "note": "error_loading_metrics",
         }
 
+
 @app.get("/api/security/compliance")
 async def get_compliance_summary() -> Dict[str, Any]:
     """Resumen de cumplimiento (opcional, si existe base de datos de compliance)."""
@@ -201,6 +205,7 @@ async def get_compliance_summary() -> Dict[str, Any]:
         # No fallar fuerte si la tabla no existe
         return {"status": "unknown", "note": str(e)}
 
+
 @app.get("/api/compliance/status")
 async def get_compliance_status() -> Dict[str, Any]:
     """Endpoint esperado por el template: retorna porcentajes de cumplimiento por estándar."""
@@ -223,6 +228,7 @@ async def get_compliance_status() -> Dict[str, Any]:
             "iso27001": round(iso27001, 1),
         },
     }
+
 
 @app.get("/api/threats/detected")
 async def get_threats_detected() -> Dict[str, Any]:
@@ -257,6 +263,7 @@ async def get_threats_detected() -> Dict[str, Any]:
 
     return {"threats": threats}
 
+
 @app.get("/api/security/health")
 async def get_security_health() -> Dict[str, Any]:
     """Endpoint esperado por el template: calcula un puntaje de salud en base a métricas."""
@@ -283,6 +290,7 @@ async def get_security_health() -> Dict[str, Any]:
         "success_rate": round(success_rate, 3),
         "high_threats": high_threats,
     }
+
 
 if __name__ == "__main__":
     uvicorn.run(

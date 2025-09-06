@@ -1,31 +1,23 @@
-# 🌸 FLORA - Dependencias Python
-# Algoritmo de cifrado híbrido post-cuántico con autodestrucción caótica
+# FLORA Core Dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+python-multipart>=0.0.6
+requests>=2.31.0
+python-dotenv>=1.0.0
 
-# Criptografía principal
-pycryptodome>=3.15.0          # AES, SHA, funciones criptográficas
-cryptography>=3.4.8           # Funciones criptográficas adicionales
+# Security Dependencies
+passlib[bcrypt]>=1.7.4
+python-jose[cryptography]>=3.3.0
+cryptography>=41.0.0
+slowapi>=0.1.9
 
-# Matemáticas y computación científica
-numpy>=1.21.0                 # Operaciones numéricas eficientes
-scipy>=1.7.0                  # Funciones matemáticas avanzadas
-matplotlib>=3.5.0             # Visualización del mapa caótico
+# Testing Dependencies
+bandit>=1.7.5
+safety>=2.3.5
+semgrep>=1.45.0
 
-# API REST
-fastapi>=0.110.0
-uvicorn>=0.23.0
+# Database Dependencies (sqlite3 viene con Python por defecto)
 
-# Testing y desarrollo
-pytest>=6.2.5                 # Framework de testing
-pytest-cov>=2.12.0            # Cobertura de código
-black>=21.7b0                 # Formateador de código
-flake8>=3.9.0                 # Linter de código
-
-# Utilidades
-click>=8.0.0                  # Interfaz de línea de comandos
-rich>=10.12.0                 # Output colorido y formateado
-tqdm>=4.62.0                  # Barras de progreso
-
-# Para desarrollo y debugging
-ipython>=7.25.0               # Shell interactivo mejorado
-jupyter>=1.0.0                # Notebooks para experimentación
-
+# Other Dependencies
+click>=8.1.0
+pydantic>=2.5.0

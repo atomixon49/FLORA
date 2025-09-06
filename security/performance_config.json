@@ -1,0 +1,28 @@
+{
+  "api_performance": {
+    "max_workers": 4,
+    "worker_class": "uvicorn.workers.UvicornWorker",
+    "worker_connections": 1000,
+    "max_requests": 1000,
+    "max_requests_jitter": 100,
+    "preload_app": true,
+    "keepalive": 2,
+    "timeout": 30
+  },
+  "database_performance": {
+    "pool_size": 20,
+    "max_overflow": 30,
+    "pool_pre_ping": true,
+    "pool_recycle": 3600
+  },
+  "caching": {
+    "redis_enabled": true,
+    "cache_ttl": 300,
+    "max_cache_size": "100MB"
+  },
+  "rate_limiting": {
+    "requests_per_minute": 60,
+    "burst_limit": 10,
+    "window_size": 60
+  }
+}

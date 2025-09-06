@@ -113,7 +113,7 @@ class ComplianceManager:
                     description TEXT NOT NULL,
                     created_date TEXT NOT NULL,
                     created_by TEXT NOT NULL,
-                    FOREIGN KEY (control_id) REFERENCES compliance_controls (control_id)
+                    FOREIGN KEY (control_id) REFERENCES compliance_controls(control_id)
                 )
             """)
     
@@ -157,7 +157,7 @@ class ComplianceManager:
             )
         ]
         
-        # Controles SOC 2
+        # Controles SOC2
         soc2_controls = [
             ComplianceControl(
                 control_id="SOC2-CC6.1",
@@ -195,7 +195,7 @@ class ComplianceManager:
             )
         ]
         
-        # Controles ISO 27001
+        # Controles ISO27001
         iso27001_controls = [
             ComplianceControl(
                 control_id="ISO27001-A.10.1",
@@ -225,7 +225,7 @@ class ComplianceManager:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
                 INSERT OR REPLACE INTO compliance_controls 
-                (control_id, standard, category, title, description, requirements,
+                (control_id, standard, category, title, description, requirements, 
                  implementation_status, evidence, last_assessed, assessor, notes)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
@@ -246,7 +246,8 @@ class ComplianceManager:
         """Obtener controles por estándar"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute("""
-                SELECT * FROM compliance_controls WHERE standard = ?
+                SELECT * FROM compliance_controls 
+                WHERE standard = ? 
                 ORDER BY control_id
             """, (standard.value,))
             
@@ -266,14 +267,11 @@ class ComplianceManager:
                     notes=row[10]
                 )
                 controls.append(control)
-                
+        
         return controls
     
-    def update_control_status(self, 
-                            control_id: str, 
-                            status: ComplianceStatus,
-                            evidence: List[str] = None,
-                            notes: str = "",
+    def update_control_status(self, control_id: str, status: ComplianceStatus, 
+                            evidence: List[str] = None, notes: str = "", 
                             assessor: str = "System"):
         """Actualizar estado de un control"""
         with sqlite3.connect(self.db_path) as conn:
@@ -290,11 +288,8 @@ class ComplianceManager:
                 
                 conn.execute("""
                     UPDATE compliance_controls 
-                    SET implementation_status = ?, 
-                        evidence = ?, 
-                        last_assessed = ?, 
-                        assessor = ?, 
-                        notes = ?
+                    SET implementation_status = ?, evidence = ?, last_assessed = ?, 
+                        assessor = ?, notes = ?
                     WHERE control_id = ?
                 """, (
                     status.value,
@@ -307,8 +302,7 @@ class ComplianceManager:
                 
                 logger.info(f"Control {control_id} actualizado a {status.value}")
     
-    def perform_assessment(self, 
-                          standard: ComplianceStandard,
+    def perform_assessment(self, standard: ComplianceStandard, 
                           assessor: str = "Security Team") -> ComplianceAssessment:
         """Realizar evaluación de compliance"""
         controls = self.get_controls_by_standard(standard)
@@ -350,7 +344,6 @@ class ComplianceManager:
         
         # Guardar evaluación
         self._save_assessment(assessment)
-        
         return assessment
     
     def _save_assessment(self, assessment: ComplianceAssessment):
@@ -358,7 +351,7 @@ class ComplianceManager:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute("""
                 INSERT OR REPLACE INTO compliance_assessments 
-                (assessment_id, standard, assessment_date, assessor, overall_status,
+                (assessment_id, standard, assessment_date, assessor, overall_status, 
                  findings, recommendations, next_assessment)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
@@ -394,9 +387,7 @@ class ComplianceManager:
         
         return dashboard
     
-    def generate_compliance_report(self, 
-                                 standard: ComplianceStandard,
-                                 format: str = "json") -> str:
+    def generate_compliance_report(self, standard: ComplianceStandard, format: str = "json") -> str:
         """Generar reporte de compliance"""
         assessment = self.perform_assessment(standard)
         
@@ -407,8 +398,7 @@ class ComplianceManager:
                 "assessment_date": assessment.assessment_date.isoformat(),
                 "assessor": assessment.assessor,
                 "overall_status": assessment.overall_status.value,
-                "compliance_rate": sum(1 for c in assessment.controls 
-                                     if c.implementation_status == ComplianceStatus.COMPLIANT) / len(assessment.controls),
+                "compliance_rate": sum(1 for c in assessment.controls if c.implementation_status == ComplianceStatus.COMPLIANT) / len(assessment.controls),
                 "controls": [
                     {
                         "control_id": c.control_id,
@@ -422,10 +412,8 @@ class ComplianceManager:
                 "recommendations": assessment.recommendations,
                 "next_assessment": assessment.next_assessment.isoformat()
             }, indent=2)
-        
         elif format == "html":
             return self._generate_html_report(assessment)
-        
         else:
             raise ValueError(f"Formato no soportado: {format}")
     
@@ -452,11 +440,7 @@ class ComplianceManager:
                 <h1>Reporte de Compliance - {assessment.standard.value.upper()}</h1>
                 <p><strong>Fecha:</strong> {assessment.assessment_date.strftime('%Y-%m-%d %H:%M:%S')}</p>
                 <p><strong>Evaluador:</strong> {assessment.assessor}</p>
-                <p><strong>Estado General:</strong> 
-                    <span class="status-{assessment.overall_status.value}">
-                        {assessment.overall_status.value.upper()}
-                    </span>
-                </p>
+                <p><strong>Estado General:</strong> <span class="status-{assessment.overall_status.value}">{assessment.overall_status.value.upper()}</span></p>
             </div>
             
             <h2>Controles Evaluados</h2>
@@ -474,11 +458,7 @@ class ComplianceManager:
             """
             for evidence in control.evidence:
                 html += f"<li>{evidence}</li>"
-            
-            html += """
-                </ul>
-            </div>
-            """
+            html += "</ul></div>"
         
         if assessment.findings:
             html += """
@@ -488,10 +468,7 @@ class ComplianceManager:
             """
             for finding in assessment.findings:
                 html += f"<li>{finding}</li>"
-            html += """
-                </ul>
-            </div>
-            """
+            html += "</ul></div>"
         
         if assessment.recommendations:
             html += """
@@ -501,10 +478,7 @@ class ComplianceManager:
             """
             for recommendation in assessment.recommendations:
                 html += f"<li>{recommendation}</li>"
-            html += """
-                </ul>
-            </div>
-            """
+            html += "</ul></div>"
         
         html += f"""
             <div class="header">
@@ -513,7 +487,6 @@ class ComplianceManager:
         </body>
         </html>
         """
-        
         return html
     
     def check_gdpr_compliance(self) -> Dict[str, Any]:
@@ -521,11 +494,11 @@ class ComplianceManager:
         return self.perform_assessment(ComplianceStandard.GDPR)
     
     def check_soc2_compliance(self) -> Dict[str, Any]:
-        """Verificar compliance SOC 2"""
+        """Verificar compliance SOC2"""
         return self.perform_assessment(ComplianceStandard.SOC2)
     
     def check_iso27001_compliance(self) -> Dict[str, Any]:
-        """Verificar compliance ISO 27001"""
+        """Verificar compliance ISO27001"""
         return self.perform_assessment(ComplianceStandard.ISO27001)
 
 # Función de conveniencia

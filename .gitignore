@@ -158,6 +158,12 @@ yarn.lock
 *.temp
 
 
+# 🛡️ Reportes de seguridad generados
+security/pentest_report_*.json
+security/vulnscan_report_*.json
+security/reports/
+
+
 
 
 

@@ -1,0 +1,6 @@
+# FLORA Backup Schedule
+# Backup diario a las 2:00 AM
+0 2 * * * /opt/flora/scripts/backup.sh >> /var/log/flora-backup.log 2>&1
+
+# Backup semanal completo (domingos a las 1:00 AM)
+0 1 * * 0 /opt/flora/scripts/full-backup.sh >> /var/log/flora-backup.log 2>&1

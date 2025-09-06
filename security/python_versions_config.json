@@ -1,0 +1,40 @@
+{
+  "supported_versions": {
+    "ubuntu-latest": [
+      "3.9",
+      "3.10",
+      "3.11",
+      "3.12"
+    ],
+    "windows-latest": [
+      "3.8",
+      "3.9",
+      "3.10",
+      "3.11",
+      "3.12"
+    ],
+    "macos-latest": [
+      "3.9",
+      "3.10",
+      "3.11",
+      "3.12"
+    ]
+  },
+  "excluded_combinations": [
+    {
+      "os": "ubuntu-latest",
+      "python": "3.8",
+      "reason": "Ubuntu 24.04 no soporta Python 3.8"
+    },
+    {
+      "os": "macos-latest",
+      "python": "3.8",
+      "reason": "macOS puede tener problemas con Python 3.8"
+    }
+  ],
+  "recommended_versions": {
+    "development": "3.11",
+    "production": "3.11",
+    "testing": "3.10"
+  }
+}

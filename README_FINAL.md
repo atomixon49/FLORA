@@ -302,3 +302,4 @@ Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más detal
 **🌸 FLORA - Protegiendo el futuro de la criptografía**
 
 *Desarrollado con ❤️ para la seguridad digital*
+

@@ -79,7 +79,7 @@ class SecurityAuditor:
         }
         self._init_database()
         self._lock = threading.Lock()
-        
+    
     def _init_database(self):
         """Inicializar base de datos de auditoría"""
         with sqlite3.connect(self.db_path) as conn:
@@ -113,17 +113,10 @@ class SecurityAuditor:
                 )
             """)
             
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_timestamp ON security_events(timestamp);
-            """)
-            
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_user_id ON security_events(user_id);
-            """)
-            
-            conn.execute("""
-                CREATE INDEX IF NOT EXISTS idx_threat_level ON security_events(threat_level);
-            """)
+            # Índices para mejorar rendimiento
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_timestamp ON security_events(timestamp)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_user_id ON security_events(user_id)")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_threat_level ON security_events(threat_level)")
     
     def _load_threat_patterns(self) -> List[ThreatPattern]:
         """Cargar patrones de amenaza predefinidos"""
@@ -186,20 +179,14 @@ class SecurityAuditor:
         ]
         return patterns
     
-    def log_operation(self, 
-                     operation: OperationType,
-                     user_id: Optional[str] = None,
-                     session_id: Optional[str] = None,
-                     ip_address: Optional[str] = None,
-                     user_agent: Optional[str] = None,
-                     data_size: Optional[int] = None,
-                     success: bool = True,
-                     details: Optional[Dict[str, Any]] = None) -> str:
+    def log_operation(self, operation: OperationType, user_id: Optional[str] = None,
+                     session_id: Optional[str] = None, ip_address: Optional[str] = None,
+                     user_agent: Optional[str] = None, data_size: Optional[int] = None,
+                     success: bool = True, details: Optional[Dict[str, Any]] = None) -> str:
         """Registrar operación de seguridad"""
-        
         if details is None:
             details = {}
-            
+        
         # Generar ID único del evento
         event_id = self._generate_event_id(operation, user_id, session_id)
         
@@ -232,7 +219,6 @@ class SecurityAuditor:
         self._detect_threats(event)
         
         logger.info(f"Evento de seguridad registrado: {event_id} - {operation.value} - {threat_level.value}")
-        
         return event_id
     
     def _generate_event_id(self, operation: OperationType, user_id: Optional[str], session_id: Optional[str]) -> str:
@@ -241,44 +227,38 @@ class SecurityAuditor:
         data = f"{operation.value}_{user_id}_{session_id}_{timestamp}"
         return hashlib.sha256(data.encode()).hexdigest()[:16]
     
-    def _assess_threat_level(self, 
-                           operation: OperationType,
-                           user_id: Optional[str],
-                           session_id: Optional[str],
-                           data_size: Optional[int],
-                           success: bool,
-                           details: Dict[str, Any]) -> tuple[ThreatLevel, float]:
+    def _assess_threat_level(self, operation: OperationType, user_id: Optional[str], 
+                           session_id: Optional[str], data_size: Optional[int], 
+                           success: bool, details: Dict[str, Any]) -> tuple[ThreatLevel, float]:
         """Evaluar nivel de amenaza y calcular puntuación de riesgo"""
-        
         risk_score = 0.0
         
         # Factores de riesgo base
         if not success:
             risk_score += 0.3
-            
+        
         if operation == OperationType.AUTH_FAILURE:
             risk_score += 0.4
-            
+        
         if operation == OperationType.THREAT_DETECTED:
             risk_score += 0.8
-            
+        
         # Factor de tamaño de datos
         if data_size and data_size > 1000000:  # > 1MB
             risk_score += 0.1
-            
         if data_size and data_size > 100000000:  # > 100MB
             risk_score += 0.2
-            
+        
         # Factor de horario (actividad nocturna)
         current_hour = datetime.now().hour
         if current_hour < 6 or current_hour > 22:
             risk_score += 0.1
-            
+        
         # Factor de frecuencia (últimas 24 horas)
         recent_events = self._get_recent_events(user_id, session_id, 86400)  # 24 horas
         if len(recent_events) > 100:
             risk_score += 0.2
-            
+        
         # Determinar nivel de amenaza
         if risk_score >= self.risk_thresholds[ThreatLevel.CRITICAL]:
             threat_level = ThreatLevel.CRITICAL
@@ -288,7 +268,7 @@ class SecurityAuditor:
             threat_level = ThreatLevel.MEDIUM
         else:
             threat_level = ThreatLevel.LOW
-            
+        
         return threat_level, min(risk_score, 1.0)
     
     def _get_recent_events(self, user_id: Optional[str], session_id: Optional[str], seconds: int) -> List[SecurityEvent]:
@@ -299,7 +279,7 @@ class SecurityAuditor:
             cursor = conn.execute("""
                 SELECT * FROM security_events 
                 WHERE timestamp > ? 
-                AND (user_id = ? OR user_id IS NULL)
+                AND (user_id = ? OR user_id IS NULL) 
                 AND (session_id = ? OR session_id IS NULL)
                 ORDER BY timestamp DESC
             """, (cutoff_time.isoformat(), user_id, session_id))
@@ -321,7 +301,7 @@ class SecurityAuditor:
                     risk_score=row[12]
                 )
                 events.append(event)
-                
+        
         return events
     
     def _save_event(self, event: SecurityEvent):
@@ -365,7 +345,7 @@ class SecurityAuditor:
         if "operation" in condition:
             if event.operation.value != condition["operation"]:
                 return False
-                
+        
         if "count" in condition and "timeframe" in condition:
             recent_events = self._get_recent_events(
                 event.user_id, event.session_id, condition["timeframe"]
@@ -376,17 +356,17 @@ class SecurityAuditor:
             ]
             if len(matching_events) < condition["count"]:
                 return False
-                
+        
         if "data_size" in condition:
             if not event.data_size or event.data_size < condition["data_size"]:
                 return False
-                
+        
         if "hour_range" in condition:
             current_hour = event.timestamp.hour
             start_hour, end_hour = condition["hour_range"]
             if not (start_hour <= current_hour <= end_hour):
                 return False
-                
+        
         return True
     
     def _record_threat_detection(self, event: SecurityEvent, pattern: ThreatPattern):
@@ -447,13 +427,13 @@ class SecurityAuditor:
             cursor = conn.execute("""
                 SELECT 
                     SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successful,
-                    COUNT(*) as total
+                    COUNT(*) as total 
                 FROM security_events 
                 WHERE timestamp > ?
             """, (cutoff_time.isoformat(),))
             success_row = cursor.fetchone()
             success_rate = success_row[0] / success_row[1] if success_row[1] > 0 else 0
-            
+        
         return {
             "timeframe_hours": hours,
             "total_events": sum(operations.values()),
@@ -478,7 +458,7 @@ class SecurityAuditor:
             raise ValueError(f"Estándar no soportado: {standard}")
     
     def _generate_soc2_report(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
-        """Generar reporte SOC 2"""
+        """Generar reporte SOC2"""
         controls = {
             "CC6.1": {
                 "description": "Logical and Physical Access Controls",
@@ -497,13 +477,10 @@ class SecurityAuditor:
             }
         }
         
-        overall_status = "COMPLIANT" if all(
-            control["status"] == "COMPLIANT" 
-            for control in controls.values()
-        ) else "NON_COMPLIANT"
+        overall_status = "COMPLIANT" if all(control["status"] == "COMPLIANT" for control in controls.values()) else "NON_COMPLIANT"
         
         return {
-            "standard": "SOC 2 Type II",
+            "standard": "SOC2 Type II",
             "period": "30 days",
             "controls": controls,
             "overall_status": overall_status
@@ -532,9 +509,9 @@ class SecurityAuditor:
         }
     
     def _generate_iso27001_report(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
-        """Generar reporte ISO 27001"""
+        """Generar reporte ISO27001"""
         return {
-            "standard": "ISO 27001",
+            "standard": "ISO27001",
             "period": "30 days",
             "controls": {
                 "A.9.1": {

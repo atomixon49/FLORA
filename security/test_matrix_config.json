@@ -1,0 +1,56 @@
+{
+  "test_strategy": {
+    "fail_fast": false,
+    "max_parallel": 4,
+    "matrix": {
+      "os": [
+        "ubuntu-latest",
+        "windows-latest",
+        "macos-latest"
+      ],
+      "python_version": [
+        "3.9",
+        "3.10",
+        "3.11",
+        "3.12"
+      ],
+      "exclude": [
+        {
+          "os": "ubuntu-latest",
+          "python_version": "3.8"
+        },
+        {
+          "os": "macos-latest",
+          "python_version": "3.8"
+        }
+      ]
+    }
+  },
+  "test_categories": {
+    "unit_tests": {
+      "enabled": true,
+      "timeout": "10m",
+      "parallel": true
+    },
+    "integration_tests": {
+      "enabled": true,
+      "timeout": "15m",
+      "parallel": false
+    },
+    "security_tests": {
+      "enabled": true,
+      "timeout": "20m",
+      "parallel": false
+    },
+    "performance_tests": {
+      "enabled": false,
+      "timeout": "30m",
+      "parallel": false
+    }
+  },
+  "retry_policy": {
+    "max_retries": 2,
+    "retry_on_failure": true,
+    "retry_on_cancellation": false
+  }
+}

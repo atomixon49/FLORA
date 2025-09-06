@@ -1,0 +1,36 @@
+{
+  "string_validation": {
+    "max_length": 10000,
+    "min_length": 1,
+    "allowed_chars": "alphanumeric, spaces, basic punctuation",
+    "forbidden_patterns": [
+      "<script",
+      "javascript:",
+      "data:",
+      "vbscript:",
+      "onload=",
+      "onerror=",
+      "eval(",
+      "expression("
+    ]
+  },
+  "file_upload": {
+    "max_size": "10MB",
+    "allowed_types": [
+      "text/plain",
+      "application/json"
+    ],
+    "forbidden_extensions": [
+      ".exe",
+      ".bat",
+      ".sh",
+      ".php",
+      ".asp"
+    ]
+  },
+  "api_requests": {
+    "max_body_size": "10MB",
+    "timeout": 30,
+    "max_headers": 50
+  }
+}

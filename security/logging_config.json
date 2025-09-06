@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "security": {
+      "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    }
+  },
+  "handlers": {
+    "security_file": {
+      "class": "logging.FileHandler",
+      "filename": "security/security.log",
+      "formatter": "security"
+    },
+    "security_console": {
+      "class": "logging.StreamHandler",
+      "formatter": "security"
+    }
+  },
+  "loggers": {
+    "security": {
+      "handlers": [
+        "security_file",
+        "security_console"
+      ],
+      "level": "INFO",
+      "propagate": false
+    }
+  }
+}

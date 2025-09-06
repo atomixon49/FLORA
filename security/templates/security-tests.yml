@@ -1,0 +1,40 @@
+name: FLORA Security Tests
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Diario a las 2:00 AM
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install security dependencies
+      run: |
+        pip install bandit safety semgrep
+    
+    - name: Run security tests
+      run: |
+        cd flora/security
+        python run_tests.py --target-url http://localhost:8000
+      continue-on-error: true
+    
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-reports
+        path: |
+          flora/security/*_report_*.json

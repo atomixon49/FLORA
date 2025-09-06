@@ -1,0 +1,13 @@
+{
+  "development": {
+    "https_enabled": true,
+    "ssl_context": "adhoc",
+    "note": "Para desarrollo local. En producci\u00f3n usar certificados reales."
+  },
+  "production": {
+    "https_enabled": true,
+    "ssl_context": "require",
+    "cert_file": "/etc/ssl/certs/flora.crt",
+    "key_file": "/etc/ssl/private/flora.key"
+  }
+}

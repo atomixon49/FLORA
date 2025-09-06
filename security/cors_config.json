@@ -1,0 +1,37 @@
+{
+  "development": {
+    "allow_origins": [
+      "http://localhost:3000",
+      "http://localhost:8080"
+    ],
+    "allow_credentials": true,
+    "allow_methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "OPTIONS"
+    ],
+    "allow_headers": [
+      "Authorization",
+      "Content-Type",
+      "X-API-Key"
+    ]
+  },
+  "production": {
+    "allow_origins": [
+      "https://yourdomain.com"
+    ],
+    "allow_credentials": true,
+    "allow_methods": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ],
+    "allow_headers": [
+      "Authorization",
+      "Content-Type"
+    ]
+  }
+}

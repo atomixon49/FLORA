@@ -1,0 +1,23 @@
+{
+  "default": {
+    "requests_per_minute": 100,
+    "burst_limit": 20,
+    "window_size": 60
+  },
+  "endpoints": {
+    "/api/v1/encrypt": {
+      "requests_per_minute": 50,
+      "burst_limit": 10
+    },
+    "/api/v1/decrypt": {
+      "requests_per_minute": 50,
+      "burst_limit": 10
+    },
+    "/api/v1/auth": {
+      "requests_per_minute": 10,
+      "burst_limit": 3
+    }
+  },
+  "ip_whitelist": [],
+  "ip_blacklist": []
+}

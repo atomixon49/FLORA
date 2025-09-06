@@ -139,3 +139,4 @@ Este sistema de seguridad está bajo licencia MIT. Ver [LICENSE](../LICENSE) par
 ---
 
 **⚠️ IMPORTANTE**: Este sistema maneja información sensible. Asegúrate de configurar correctamente todas las medidas de seguridad antes de usar en producción.
+

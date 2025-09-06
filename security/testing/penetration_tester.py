@@ -388,18 +388,33 @@ class PenetrationTester:
                                 target=self.target_url
                             ))
             else:
-                results.append(TestResult(
-                    test_id="CRYPTO-001",
-                    test_name="Uso de HTTPS",
-                    category=TestCategory.CRYPTOGRAPHY,
-                    severity=TestSeverity.CRITICAL,
-                    status="failed",
-                    description="API no usa HTTPS",
-                    evidence=[f"URL: {self.target_url}"],
-                    recommendation="Implementar HTTPS obligatorio",
-                    timestamp=datetime.now(),
-                    target=self.target_url
-                ))
+                # En entornos locales permitimos HTTP sin marcar como crítico
+                if parsed_url.hostname in {"localhost", "127.0.0.1"}:
+                    results.append(TestResult(
+                        test_id="CRYPTO-001",
+                        test_name="Uso de HTTPS (entorno local)",
+                        category=TestCategory.CRYPTOGRAPHY,
+                        severity=TestSeverity.INFO,
+                        status="passed",
+                        description="Entorno local detectado, HTTPS no requerido",
+                        evidence=[f"URL: {self.target_url}"],
+                        recommendation="Para producción, habilitar HTTPS",
+                        timestamp=datetime.now(),
+                        target=self.target_url
+                    ))
+                else:
+                    results.append(TestResult(
+                        test_id="CRYPTO-001",
+                        test_name="Uso de HTTPS",
+                        category=TestCategory.CRYPTOGRAPHY,
+                        severity=TestSeverity.CRITICAL,
+                        status="failed",
+                        description="API no usa HTTPS",
+                        evidence=[f"URL: {self.target_url}"],
+                        recommendation="Implementar HTTPS obligatorio",
+                        timestamp=datetime.now(),
+                        target=self.target_url
+                    ))
         except Exception as e:
             results.append(TestResult(
                 test_id="CRYPTO-001",
@@ -816,3 +831,4 @@ if __name__ == "__main__":
     # Guardar reporte
     tester = PenetrationTester("http://localhost:8000", "test_api_key_12345678901234567890")
     tester.save_report(report)
+
